@@ -1,6 +1,11 @@
 ## Python Localization Script with GPT Support
 
-This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments.
+<img src="images/github_localize_header.jpg">
+
+This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments. 
+
+**Please note:** only supports `gpt-4-1106-preview` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON.
+
 
 ### Prerequisites
 
@@ -22,7 +27,7 @@ pip3 install openai tiktoken argparse tqdm
 To use the script, run it from the command line with the required arguments.
 
 ```
-python3 script_name.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_to TARGET_LANG_CODES --localize_from SOURCE_LANG_CODES
+python3 script_name.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_from SOURCE_LANG_CODES --localize_to TARGET_LANG_CODES
 ```
 
 #### Available Arguments
@@ -31,15 +36,15 @@ python3 script_name.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_F
 - `--gpt_model`: The GPT model you want to use (optional, default is `gpt-3.5-turbo-1106`).
 - `--file`: The path to the `.xcstrings` file you want to localize (required).
 - `--out_file`: The path to the output `.xcstrings` file (optional, will overwrite the original file if not provided).
-- `--localize_to`: A comma-separated list of target language codes (required).
 - `--localize_from`: A comma-separated list of source language codes (required).
+- `--localize_to`: A comma-separated list of target language codes (required).
 - `--app_description`: A short description of your application for better context understanding (optional).
 - `--max_input_token_count`: Maximum number of tokens for the model (optional).
 
 ### Example
 
 ```bash
-python3 script_name.py --gpt_api_key "your-api-key" --file "./Localizable.xcstrings" --localize_to "es,fr,it" --localize_from "en" --app_description "A productivity app for managing tasks."
+python3 script_name.py --gpt_api_key "your-api-key" --file "./Localizable.xcstrings" --localize_from "en,de" --localize_to "es,fr,it" --app_description "A productivity app for managing tasks."
 ```
 
 This command will translate the content of `Localizable.xcstrings` from English to Spanish, French, and Italian.
