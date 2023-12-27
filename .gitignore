@@ -1,0 +1,11 @@
+.idea/ 
+__pycache__ 
+data/* 
+venv/ 
+.ipynb_checkpoints
+train/checkpoints/
+.venv
+checkpoints/*
+test_images/*
+train/save/*
+.vscode
