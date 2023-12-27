@@ -27,7 +27,7 @@ pip3 install openai tiktoken argparse tqdm
 To use the script, run it from the command line with the required arguments.
 
 ```
-python3 script_name.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_from SOURCE_LANG_CODES --localize_to TARGET_LANG_CODES
+python3 localize_strings.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_from SOURCE_LANG_CODES --localize_to TARGET_LANG_CODES
 ```
 
 #### Available Arguments
@@ -44,7 +44,7 @@ python3 script_name.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_F
 ### Example
 
 ```bash
-python3 script_name.py --gpt_api_key "your-api-key" --file "./Localizable.xcstrings" --localize_from "en,de" --localize_to "es,fr,it" --app_description "A productivity app for managing tasks."
+python3 localize_strings.py --gpt_api_key "your-api-key" --file "./Localizable.xcstrings" --localize_from "en,de" --localize_to "es,fr,it" --app_description "A productivity app for managing tasks."
 ```
 
 This command will translate the content of `Localizable.xcstrings` from English to Spanish, French, and Italian.
