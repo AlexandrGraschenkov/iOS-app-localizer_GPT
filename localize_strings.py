@@ -11,17 +11,21 @@ class Hasher(dict):
         value = self[key] = type(self)()
         return value
 
-def generate_prompt(app_descrition = None):
-    prompt = """Assist with localizing the iOS application. '{app_descrition}'Avoid duplicating translated text. Only translate fields with 'null' values. The 'comment' field is optional. Maintain the text length, spacing, indentation, and placeholders such as '%@' and '%d' from the original language. Follow the provided example for plural text localization. Example JSON input: 
+def generate_prompt(app_descrition = None, lang_code = None):
+    prompt = """Assist with localizing the iOS application{to_lang}. {app_descrition}Avoid duplicating translated text. Only translate fields with 'null' values. The 'comment' field is optional. Maintain the text length, spacing, indentation, and placeholders such as '%@' and '%d' from the original language. Follow the provided example for plural text localization. Don't output comment. Example JSON input: 
 {"support": {"en":"Write to support: %@","ru":null,"comment":"%@ - email address"},"day_count":{"en":{"one":"%d day","other":"%d days"},"ru":null}}
 Output:
 {"support":{"ru":"Написать в поддержку: %@"},"day_count":{"ru":{"one":"%d день","few":"%d дня","other":"%d дней"}}}
 """
     if app_descrition:
         text = f"Application is about of: {app_descrition}. "
-        prompt.replace("{app_descrition}", text)
+        prompt = prompt.replace("{app_descrition}", text)
     else:
-        prompt.replace("{app_descrition}", "")
+        prompt = prompt.replace("{app_descrition}", "")
+    if lang_code:
+        prompt = prompt.replace("{to_lang}", f" to lang code \"{lang_code}\"")
+    else:
+        prompt = prompt.replace("{to_lang}", "")
     return prompt
 
 def prepare_translate_dict(original, src_langs, dst_langs):
@@ -67,6 +71,7 @@ def update_with_translations(original, gpt_result, force_update = False, needs_r
         original_dict = original["strings"][key]
         for lang in gpt_result[key]:
             if lang in original_dict["localizations"] and not force_update: continue
+            if lang == "comment": continue # gpt somtimes translate comment to
 
             state = "needs_review" if needs_review else "translated"
             val = gpt_result[key][lang]
@@ -132,6 +137,13 @@ def parse_arguments():
 
     return parser.parse_args()
 
+def save(file: str, data: dict):
+    json.dump(data, 
+              open(file, "w"), 
+              indent=2, 
+              ensure_ascii=False,
+              separators=(',', ' : ')) # override separators to make identical
+
 def main():
     args = parse_arguments()
     processor = GPTProcessor(api_key=args.gpt_api_key, model=args.gpt_model, max_input_token_count=args.max_input_token_count)
@@ -142,24 +154,22 @@ def main():
     if not out_file_path:
         out_file_path = args.file
 
-    prompt = generate_prompt(app_descrition=args.app_descrition)
 
     pbar = tqdm(dst_langs)
     for dst_lang in pbar:
         pbar.set_description_str(f"Translating to {dst_lang}")
         process_dict = prepare_translate_dict(original, src_langs, [dst_lang])
 
+        if len(process_dict) == 0: continue
+        prompt = generate_prompt(app_descrition=args.app_descrition, lang_code=dst_lang)
         translated_data = processor.process_json(prompt, process_dict)
         update_with_translations(original, translated_data)
+        save(out_file_path, original) # don't wanna miss progress
     
     print(f"Tokens spended in {processor.total_in_tokens} / out {processor.total_out_tokens}")
     print("Save result")
     # update_with_translations(original, result)
-    json.dump(original, 
-              open(out_file_path, "w"), 
-              indent=2, 
-              ensure_ascii=False,
-              separators=(', ', ' : ')) # override separators to make identical
+    save(out_file_path, original)
     print("Done")
 
 if __name__ == '__main__':
