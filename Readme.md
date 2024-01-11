@@ -6,6 +6,7 @@ This script is designed to help in localizing an iOS application using OpenAI's 
 
 **Please note:** only supports `gpt-4-1106-preview` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON.
 
+![Terminal animation](/images/anim.gif)
 
 ### Prerequisites
 
