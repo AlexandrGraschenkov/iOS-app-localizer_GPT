@@ -1,8 +1,9 @@
 from openai import OpenAI
 import json
 import tiktoken, argparse
-from gpt_utils import gpt_models, GPTProcessor
+from utils.gpt_utils import gpt_models, GPTProcessor
 from tqdm.auto import tqdm
+from utils.languages import LANGUAGES
 
 # for easy access to nested elements
 class Hasher(dict):
@@ -12,10 +13,10 @@ class Hasher(dict):
         return value
 
 def generate_prompt(app_descrition = None, lang_code = None):
-    prompt = """Assist with localizing the iOS application{to_lang}. {app_descrition}Avoid duplicating translated text. Only translate fields with 'null' values. The 'comment' field is optional. Maintain the text length, spacing, indentation, and placeholders such as '%@' and '%d' from the original language. Follow the provided example for plural text localization. Don't output comment. Example JSON input: 
-{"support": {"en":"Write to support: %@","ru":null,"comment":"%@ - email address"},"day_count":{"en":{"one":"%d day","other":"%d days"},"ru":null}}
+    prompt = """Assist with localizing the iOS application{to_lang}. Only translate fields with 'null' values. Maintain the text length, spacing, indentation, and placeholders such as '%@' and '%d'. Example JSON input: 
+{"support":{"en":"Support","ru":null}}
 Output:
-{"support":{"ru":"Написать в поддержку: %@"},"day_count":{"ru":{"one":"%d день","few":"%d дня","other":"%d дней"}}}
+{"support":{"ru":"Поддержка"}}
 """
     if app_descrition:
         text = f"Application is about of: {app_descrition}. "
@@ -23,7 +24,11 @@ Output:
     else:
         prompt = prompt.replace("{app_descrition}", "")
     if lang_code:
-        prompt = prompt.replace("{to_lang}", f" to lang code \"{lang_code}\"")
+        if lang_code in LANGUAGES:
+            lang = LANGUAGES[lang_code]
+            prompt = prompt.replace("{to_lang}", f" to {lang} (lang code '{lang_code}')")
+        else:
+            prompt = prompt.replace("{to_lang}", f" to lang code \"{lang_code}\"")
     else:
         prompt = prompt.replace("{to_lang}", "")
     return prompt
@@ -38,6 +43,7 @@ def prepare_translate_dict(original, src_langs, dst_langs):
 
         has_original_text = False
         for lang in src_langs:
+            if lang not in orig_dict["localizations"]: continue
             val = orig_dict["localizations"][lang]
             if "stringUnit" in val: 
                 simple_dict[lang] = val["stringUnit"]["value"]
@@ -163,7 +169,7 @@ def main():
         if len(process_dict) == 0: continue
         prompt = generate_prompt(app_descrition=args.app_descrition, lang_code=dst_lang)
         translated_data = processor.process_json(prompt, process_dict)
-        update_with_translations(original, translated_data)
+        update_with_translations(original, translated_data, force_update=True)
         save(out_file_path, original) # don't wanna miss progress
     
     print(f"Tokens spended in {processor.total_in_tokens} / out {processor.total_out_tokens}")

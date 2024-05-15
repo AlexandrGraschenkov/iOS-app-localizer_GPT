@@ -9,3 +9,5 @@ checkpoints/*
 test_images/*
 train/save/*
 .vscode
+
+temp_data
