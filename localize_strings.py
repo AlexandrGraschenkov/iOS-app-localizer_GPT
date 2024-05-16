@@ -1,7 +1,7 @@
 from openai import OpenAI
 import json
 import tiktoken, argparse
-from utils.gpt_utils import gpt_models, GPTProcessor
+from utils.gpt_utils import gpt_models, GPTWrapper
 from tqdm.auto import tqdm
 from utils.languages import LANGUAGES
 
@@ -108,7 +108,7 @@ def parse_arguments():
     list_models = ", ".join(list(gpt_models.keys()))
     parser.add_argument('--gpt_model',
                         type=str,
-                        default="gpt-3.5-turbo-1106",
+                        default="gpt-4-1106-preview",
                         help=f'Choose model from: {list_models}')
     
     parser.add_argument('--file',
@@ -152,7 +152,9 @@ def save(file: str, data: dict):
 
 def main():
     args = parse_arguments()
-    processor = GPTProcessor(api_key=args.gpt_api_key, model=args.gpt_model, max_input_token_count=args.max_input_token_count)
+    gpt = GPTWrapper(api_key=args.gpt_api_key, 
+                     model=args.gpt_model, 
+                     max_input_token_count=args.max_input_token_count)
     src_langs = args.localize_from.split(",")
     dst_langs = args.localize_to.split(",")
     original = json.load(open(args.file))
@@ -168,11 +170,11 @@ def main():
 
         if len(process_dict) == 0: continue
         prompt = generate_prompt(app_descrition=args.app_descrition, lang_code=dst_lang)
-        translated_data = processor.process_json(prompt, process_dict)
+        translated_data = gpt.process_json(prompt, process_dict)
         update_with_translations(original, translated_data, force_update=True)
         save(out_file_path, original) # don't wanna miss progress
     
-    print(f"Tokens spended in {processor.total_in_tokens} / out {processor.total_out_tokens}")
+    print(f"Tokens spended in {gpt.total_in_tokens} / out {gpt.total_out_tokens}")
     print("Save result")
     # update_with_translations(original, result)
     save(out_file_path, original)

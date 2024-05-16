@@ -15,7 +15,7 @@ def split_dictionary_by_half(d):
     items = list(d.items())
     return dict(items[:midpoint]), dict(items[midpoint:])
 
-class GPTProcessor:
+class GPTWrapper:
     def __init__(self, api_key, model, temperature = 0.2, max_input_token_count = None):
         if model not in gpt_models:
             print(f"Can't find {model} in list available models")

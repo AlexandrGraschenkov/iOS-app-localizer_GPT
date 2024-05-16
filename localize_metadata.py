@@ -2,7 +2,7 @@ from openai import OpenAI
 import json, argparse, os
 from os.path import join
 from tqdm import tqdm
-from utils.gpt_utils import gpt_models, GPTProcessor
+from utils.gpt_utils import gpt_models, GPTWrapper
 from utils.languages import LANGUAGES, COUNTRIES
 from utils.metadata import get_exceed_fields, print_exceed_fields
 
@@ -89,7 +89,7 @@ def parse_arguments():
     list_models = ", ".join(list(gpt_models.keys()))
     parser.add_argument('--gpt_model',
                         type=str,
-                        default="gpt-3.5-turbo-1106",
+                        default="gpt-4-1106-preview",
                         help=f'Choose model from: {list_models}')
     
     parser.add_argument('--fastlane_meta_path',
@@ -121,8 +121,7 @@ def parse_arguments():
 def main():
     global client
     args = parse_arguments()
-    processor = GPTProcessor(api_key=args.gpt_api_key, 
-                             model=args.gpt_model)
+    gpt = GPTWrapper(api_key=args.gpt_api_key, model=args.gpt_model)
 
     src_langs = args.localize_from.split(",")
     fields = args.fields.split(",")
@@ -136,12 +135,12 @@ def main():
         pbar.set_description(f"Processing language {dst_lang}")
         data = read_metadata(meta_path, fields, src_langs, dst_lang)
         prompt = generate_prompt(dst_lang, args.force_app_name)
-        result_dict = processor.process_json(prompt, data)
+        result_dict = gpt.process_json(prompt, data)
         
         update_metadata(meta_path, fields, dst_lang, result_dict)
         exceed_fields += get_exceed_fields(fields, dst_lang, result_dict)
 
-    print(f"Tokens spended in {processor.total_in_tokens} / out {processor.total_out_tokens}")
+    print(f"Tokens spended in {gpt.total_in_tokens} / out {gpt.total_out_tokens}")
     print_exceed_fields(exceed_fields)
     print("Done")
 
