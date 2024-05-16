@@ -38,7 +38,7 @@ JSON Output:
 ["name":{"de-DE":"Videoplayer"}]
 """
     if same_app_name:
-        prompt = prompt.replace("{kepp_app_name}", f' Keep name of App on all languages same!"{same_app_name}".')
+        prompt = prompt.replace("{kepp_app_name}", f' Keep name of App on all languages same "{same_app_name}".')
     else:
         prompt = prompt.replace("{kepp_app_name}", "")
     
