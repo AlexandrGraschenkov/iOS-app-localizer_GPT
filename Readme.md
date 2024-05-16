@@ -34,7 +34,7 @@ To use the script, run it from the command line with the required arguments.
 python3 localize_strings.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_from SOURCE_LANG_CODES --localize_to TARGET_LANG_CODES
 ```
 
-For `localize_metadata` you also need to provide `fastlane_api_key_path` with path to JSON file:
+For `localize_release_notes` you need to [install Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/). You also need to provide `fastlane_api_key_path` with path to JSON file:
 ```json
 {
   "key_id": "CQC6F7C12K",
