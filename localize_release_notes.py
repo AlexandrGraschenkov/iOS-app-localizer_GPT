@@ -52,12 +52,6 @@ def parse_arguments():
                         required=True,
                         help='Bundle App ID')
     
-    parser.add_argument('--keep_promo_from',
-                        type=str,
-                        default="",
-                        # required=True,
-                        help='Local path to metadata')
-    
     return parser.parse_args()
 
 
@@ -89,15 +83,17 @@ def upload(release_notes, api_key_path, app_id):
         text = release_notes[key]
         open(join(temp_meta, key, "release_notes.txt"), "w").write(text)
 
-    params = {"api_key_path": f'"{api_key_path}"',
-    "app_identifier": f'"{app_id}"',
-    "skip_binary_upload": "true", # skip binary upload when updating only screenshots/metada
-    "force": "true", # Skip the HTML report file verification
-    "submit_for_review": "false", # Do not submit for review after metadata update
-    "overwrite_screenshots": "false",
-    "skip_screenshots": "true",
-    "metadata_path": f'"{temp_meta}"',
-    "precheck_include_in_app_purchases": "false"}
+    params = {
+        "api_key_path": f'"{api_key_path}"',
+        "app_identifier": f'"{app_id}"',
+        "skip_binary_upload": "true", # skip binary upload when updating only screenshots/metada
+        "force": "true", # Skip the HTML report file verification
+        "submit_for_review": "false", # Do not submit for review after metadata update
+        "overwrite_screenshots": "false",
+        "skip_screenshots": "true",
+        "metadata_path": f'"{temp_meta}"',
+        "precheck_include_in_app_purchases": "false"
+    }
 
     command = "fastlane run deliver"
     for key in params:
@@ -123,6 +119,9 @@ def main():
     to_translate = {'notes': notes, 'localize_to': languages}
     prompt = get_prompt()
     release_notes_localized = gpt.process_json(prompt, to_translate)
+
+    release_notes_preview = json.dumps(release_notes_localized, indent=2, ensure_ascii=False)
+    print(f"Release notes:\n{release_notes_preview}\n")
 
     print(f"Tokens spended in {gpt.total_in_tokens} / out {gpt.total_out_tokens}")
     print("Uploading release notes")
