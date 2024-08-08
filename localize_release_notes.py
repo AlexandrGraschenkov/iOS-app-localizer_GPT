@@ -105,13 +105,13 @@ def upload(release_notes, api_key_path, app_id):
         raise Exception(f"Failed to upload metadata with fastlane: {result.stderr}")
 
 def main():
-    global client
     args = parse_arguments()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     future = executor.submit(load_languages, args.fastlane_api_key_path, args.app_id)
     gpt = GPTWrapper(api_key=args.gpt_api_key, 
                      model=args.gpt_model,
                      temperature=0.4)
+    if not gpt: exit
 
     notes = parse_input()
     languages = future.result()

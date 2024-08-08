@@ -7,7 +7,7 @@ This script is designed to help in localizing an iOS application using OpenAI's 
 ### Localization Scripts
 <img src="images/modes.jpg">
 
-**Please note:** only supports `gpt-4-1106-preview`, `gpt-4o-2024-05-13` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere.
+**Please note:** only supports `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere.
 
 ![Terminal animation](/images/anim.gif)
 

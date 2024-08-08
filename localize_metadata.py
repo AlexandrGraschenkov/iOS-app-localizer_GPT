@@ -119,7 +119,6 @@ def parse_arguments():
     return parser.parse_args()
 
 def main():
-    global client
     args = parse_arguments()
     gpt = GPTWrapper(api_key=args.gpt_api_key, model=args.gpt_model)
 

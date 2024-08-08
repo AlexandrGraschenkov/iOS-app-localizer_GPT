@@ -155,6 +155,8 @@ def main():
     gpt = GPTWrapper(api_key=args.gpt_api_key, 
                      model=args.gpt_model, 
                      max_input_token_count=args.max_input_token_count)
+    if not gpt: exit
+    
     src_langs = args.localize_from.split(",")
     dst_langs = args.localize_to.split(",")
     original = json.load(open(args.file))
