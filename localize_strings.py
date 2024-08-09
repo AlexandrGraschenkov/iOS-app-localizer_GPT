@@ -131,7 +131,7 @@ def parse_arguments():
                         required=True,
                         help='Array of language codes like "ru,en,de"')
     
-    parser.add_argument('--app_descrition',
+    parser.add_argument('--app_description',
                         type=str,
                         default=None,
                         help='Short description about your App. For better context understanding.')

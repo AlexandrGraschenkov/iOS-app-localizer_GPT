@@ -121,6 +121,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     gpt = GPTWrapper(api_key=args.gpt_api_key, model=args.gpt_model)
+    if not gpt: exit
 
     src_langs = args.localize_from.split(",")
     fields = args.fields.split(",")
