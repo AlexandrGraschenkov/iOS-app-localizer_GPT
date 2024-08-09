@@ -12,17 +12,17 @@ class Hasher(dict):
         value = self[key] = type(self)()
         return value
 
-def generate_prompt(app_descrition = None, lang_code = None):
+def generate_prompt(app_description = None, lang_code = None):
     prompt = """Assist with localizing the iOS application{to_lang}. Only translate fields with 'null' values. Maintain the text length, spacing, indentation, and placeholders such as '%@' and '%d'. Example JSON input: 
 {"support":{"en":"Support","ru":null}}
 Output:
 {"support":{"ru":"Поддержка"}}
 """
-    if app_descrition:
-        text = f"Application is about of: {app_descrition}. "
-        prompt = prompt.replace("{app_descrition}", text)
+    if app_description:
+        text = f"Application is about of: {app_description}. "
+        prompt = prompt.replace("{app_description}", text)
     else:
-        prompt = prompt.replace("{app_descrition}", "")
+        prompt = prompt.replace("{app_description}", "")
     if lang_code:
         if lang_code in LANGUAGES:
             lang = LANGUAGES[lang_code]
@@ -171,7 +171,7 @@ def main():
         process_dict = prepare_translate_dict(original, src_langs, [dst_lang])
 
         if len(process_dict) == 0: continue
-        prompt = generate_prompt(app_descrition=args.app_descrition, lang_code=dst_lang)
+        prompt = generate_prompt(app_description=args.app_description, lang_code=dst_lang)
         translated_data = gpt.process_json(prompt, process_dict)
         update_with_translations(original, translated_data, force_update=True)
         save(out_file_path, original) # don't wanna miss progress
