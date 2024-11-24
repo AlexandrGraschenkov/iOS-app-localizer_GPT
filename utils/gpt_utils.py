@@ -31,6 +31,7 @@ class GPTWrapper:
         self.total_out_tokens = 0
 
     def process_json(self, prompt: str, json_input: dict):
+        if len(json_input) == 0: return dict()
         splitted_jsons = [json_input]
         idx = 0
         # split input into chunks, to fit max token limit
