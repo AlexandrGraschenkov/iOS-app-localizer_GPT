@@ -58,6 +58,10 @@ def parse_arguments():
                         default=False,
                         help='If the release notes have a lot of text, it’s better to translate each language separately')
     
+    parser.add_argument('--temperature',                    
+                        default=0.6,
+                        help='Temperature for GPT call')
+    
     return parser.parse_args()
 
 
@@ -116,7 +120,7 @@ def main():
     future = executor.submit(load_languages, args.fastlane_api_key_path, args.app_id)
     gpt = GPTWrapper(api_key=args.gpt_api_key, 
                      model=args.gpt_model,
-                     temperature=0.6)
+                     temperature=args.temperature)
     if not gpt: exit
 
     notes = parse_input()
