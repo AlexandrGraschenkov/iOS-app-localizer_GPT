@@ -4,10 +4,11 @@ from os.path import join
 from openai import OpenAI
 from utils.languages import LANGUAGES_LIST
 from utils.gpt_utils import gpt_models, GPTWrapper
+from tqdm import tqdm
 
 
 def get_prompt():
-    return """Help to localize iOS release notes. For example as input you get JSON text:
+    return """Help to localize iOS release notes. Rephrase them naturally in each language. For example as input you get JSON text:
 {"notes":"Bug fixes","localize_to":["ru","en-US"]}
 
 As output provide translated text for empty lang code:
@@ -39,7 +40,7 @@ def parse_arguments():
     list_models = ", ".join(list(gpt_models.keys()))
     parser.add_argument('--gpt_model',
                         type=str,
-                        default="gpt-4-1106-preview",
+                        default="gpt-4o-2024-05-13",
                         help=f'Choose model from: {list_models}')
     
     parser.add_argument('--fastlane_api_key_path',
@@ -51,6 +52,11 @@ def parse_arguments():
                         type=str,
                         required=True,
                         help='Bundle App ID')
+    
+    parser.add_argument('--separate_translation',
+                        action='store_true',                        
+                        default=False,
+                        help='If the release notes have a lot of text, it’s better to translate each language separately')
     
     return parser.parse_args()
 
@@ -110,15 +116,25 @@ def main():
     future = executor.submit(load_languages, args.fastlane_api_key_path, args.app_id)
     gpt = GPTWrapper(api_key=args.gpt_api_key, 
                      model=args.gpt_model,
-                     temperature=0.4)
+                     temperature=0.6)
     if not gpt: exit
 
     notes = parse_input()
     languages = future.result()
 
-    to_translate = {'notes': notes, 'localize_to': languages}
-    prompt = get_prompt()
-    release_notes_localized = gpt.process_json(prompt, to_translate)
+    release_notes_localized = dict()
+    if args.separate_translation:
+        pbar = tqdm(languages)
+        for lang in pbar:
+            pbar.set_description(f"Processing language {lang}")
+            to_translate = {'notes': notes, 'localize_to': lang}
+            prompt = get_prompt()
+            release_notes_lang = gpt.process_json(prompt, to_translate)
+            release_notes_localized[lang] = release_notes_lang[lang]
+    else:
+        to_translate = {'notes': notes, 'localize_to': languages}
+        prompt = get_prompt()
+        release_notes_localized = gpt.process_json(prompt, to_translate)
 
     release_notes_preview = json.dumps(release_notes_localized, indent=2, ensure_ascii=False)
     print(f"Release notes:\n{release_notes_preview}\n")
