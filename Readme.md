@@ -2,7 +2,9 @@
 
 <img src="images/github_localize_header.jpg">
 
-This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments. 
+This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments.
+
+[Mobius Conference Speech (Russian, YouTube)](https://www.youtube.com/watch?v=lU7EZ2K_4ho)
 
 ### Localization Scripts
 <img src="images/modes.jpg">

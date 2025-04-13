@@ -178,7 +178,8 @@ def save(file: str, data: dict):
               open(file, "w"), 
               indent=2, 
               ensure_ascii=False,
-              separators=(',', ' : ')) # override separators to make identical
+              separators=(',', ' : '),
+              sort_keys=True) # override separators to make identical
 
 def main():
     args = parse_arguments()

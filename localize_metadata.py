@@ -5,6 +5,7 @@ from tqdm import tqdm
 from utils.gpt_utils import gpt_models, GPTWrapper
 from utils.languages import LANGUAGES, COUNTRIES
 from utils.metadata import get_exceed_fields, print_exceed_fields
+import shutil
 
 def get_language(code: str) -> str:
     try:
@@ -102,6 +103,11 @@ def parse_arguments():
                         required=True,
                         help='Metadata fields to localzize, same as file name; Example: "name,subtitle,description"')
     
+    parser.add_argument('--copy_fields',
+                        type=str,
+                        required=True,
+                        help='Metadata fields to copy, same as file name; Example: "support_url,marketing_url,privacy_url"')
+    
     parser.add_argument('--localize_to',
                         type=str,
                         required=True,
@@ -125,6 +131,7 @@ def main():
 
     src_langs = args.localize_from.split(",")
     fields = args.fields.split(",")
+    copy_fields = args.copy_fields.split(",")
     dst_langs = args.localize_to.split(",")
     meta_path = args.fastlane_meta_path
 
@@ -139,10 +146,31 @@ def main():
         
         update_metadata(meta_path, fields, dst_lang, result_dict)
         exceed_fields += get_exceed_fields(fields, dst_lang, result_dict)
-
+        for field in copy_fields:
+            copy_field_from_source(field, meta_path, dst_lang, src_langs[0])
+    
     print(f"Tokens spended in {gpt.total_in_tokens} / out {gpt.total_out_tokens}")
     print_exceed_fields(exceed_fields)
     print("Done")
+
+def copy_field_from_source(field, meta_path, dst_lang, src_lang):
+    """Copy metadata field from first available source language to destination language"""
+    dst_file = join(meta_path, dst_lang, f"{field}.txt")
+    
+    # Skip if destination file exists and not empty
+    if os.path.exists(dst_file):
+        with open(dst_file, 'r') as file:
+            if file.read().strip():
+                return
+    
+    src_file = join(meta_path, src_lang, f"{field}.txt")
+    if os.path.exists(src_file):
+        with open(src_file, 'r') as src:
+            content = src.read()
+        os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+        with open(dst_file, 'w') as dst:
+            dst.write(content)
+
 
 if __name__ == '__main__':
     main()
