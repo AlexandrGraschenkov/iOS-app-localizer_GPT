@@ -43,6 +43,8 @@ def prepare_translate_dict(original, src_langs, dst_langs):
     result = dict()
     for key in original["strings"]:
         orig_dict = Hasher(original["strings"][key])
+        if orig_dict.get("shouldTranslate") == False:
+            continue
         simple_dict = dict()
         if "comment" in orig_dict:
             simple_dict["comment"] = orig_dict["comment"]
