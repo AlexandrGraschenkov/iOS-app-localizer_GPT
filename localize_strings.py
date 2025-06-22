@@ -166,27 +166,28 @@ def parse_arguments():
     
     parser.add_argument('--file',
                         type=str,
-                        required=False,
-                        nargs="+",
                         dest='files',
                         help='Location of `xcstrings` file(s)')
     
     parser.add_argument('--files',
                         type=str,
-                        required=False,
                         nargs="+",
                         help='Location of `xcstrings` file(s)')
     
     parser.add_argument('--files_pattern',
                         type=str,
-                        required=False,
                         help='Pattern to match files (e.g., "./project_path/*.xcstrings")')
+    
+    parser.add_argument('--out_file',
+                        type=str,
+                        dest='out_files',
+                        help='Customize output location of `xcstrings` output files')
     
     parser.add_argument('--out_files',
                         type=str,
                         default=None,
                         nargs="+",
-                        help='Customize output location of `xcstrings` output file')
+                        help='Customize output location of `xcstrings` output files')
     
     parser.add_argument('--localize_to',
                         type=str,

@@ -6,10 +6,14 @@ This script is designed to help in localizing an iOS application using OpenAI's 
 
 [Mobius Conference Speech (Russian, YouTube)](https://www.youtube.com/watch?v=lU7EZ2K_4ho)
 
+## News 🚀
+* **2025.06.22** - Improved support for plural strings; added ability to process multiple files
+
+
 ### Localization Scripts
 <img src="images/modes.jpg">
 
-**Please note:** only supports `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere.
+**Please note:** only supports `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere. Did't test quality with `gpt-4.1`, `gpt-4.1-mini`.
 
 ![Terminal animation](/images/anim.gif)
 
@@ -19,8 +23,6 @@ To run this script, you will need:
 - Python 3.x
 - `openai` Python package
 - An OpenAI API key
-
-### Installation
 
 Before you can run the script, make sure to install the necessary Python packages:
 
@@ -33,7 +35,20 @@ pip3 install openai tiktoken argparse tqdm
 To use the script, run it from the command line with the required arguments.
 
 ```bash
-python3 localize_strings.py --gpt_api_key YOUR_GPT_API_KEY --file PATH_TO_XCSTRINGS_FILE --localize_from SOURCE_LANG_CODES --localize_to TARGET_LANG_CODES
+python3 localize_strings.py \
+--gpt_api_key YOUR_GPT_API_KEY \
+--files PATH_TO_XCSTRINGS_FILE \
+--localize_from SOURCE_LANG_CODES \
+--localize_to TARGET_LANG_CODES
+```
+
+Or just pass project folder and it will localize all `*.xcstrings` files inside project
+```bash
+python3 localize_strings.py \
+--gpt_api_key YOUR_GPT_API_KEY \
+--files_pattern ./project_path/*.xcstrings \
+--localize_from SOURCE_LANG_CODES \
+--localize_to TARGET_LANG_CODES
 ```
 
 For `localize_release_notes` you need to [install Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/). You also need to provide `fastlane_api_key_path` with path to JSON file:
@@ -51,24 +66,17 @@ For `localize_release_notes` you need to [install Fastlane](https://docs.fastlan
 
 - `--gpt_api_key`: Your GPT API key (required).
 - `--gpt_model`: The GPT model you want to use (optional, default is `gpt-3.5-turbo-1106`).
-- `--file`: The path to the `.xcstrings` file you want to localize (required).
-- `--out_file`: The path to the output `.xcstrings` file (optional, will overwrite the original file if not provided).
+- `--files`: The path to the `.xcstrings` files you want to localize (required).
+- `--out_files`: The path to the output `.xcstrings` files (optional, will overwrite the original file if not provided).
 - `--localize_from`: A comma-separated list of source language codes (required).
 - `--localize_to`: A comma-separated list of target language codes (required).
 - `--app_description`: A short description of your application for better context understanding (optional).
 - `--max_input_token_count`: Maximum number of tokens for the model (optional).
 
-### Example
-
-```bash
-python3 localize_strings.py --gpt_api_key "your-api-key" --file "./Localizable.xcstrings" --localize_from "en,de" --localize_to "es,fr,it" --app_description "A productivity app for managing tasks."
-```
-
-This command will translate the content of `Localizable.xcstrings` from English to Spanish, French, and Italian.
 
 ### Output
 
-The script will generate a new `.xcstrings` file with the translations added. If the `--out_file` argument is not provided, the original file will be overwritten.
+The script will generate a new `.xcstrings` file with the translations added. If the `--out_files` argument is not provided, the original file will be overwritten.
 
 ### Notes
 
