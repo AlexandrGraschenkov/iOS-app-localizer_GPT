@@ -2,13 +2,11 @@
 
 <img src="images/github_localize_header.jpg">
 
-This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments.
+This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments. You can also localize your release notes into all App Store languages with a single command. Honestly, this is probably **the most useful tool** I’ve ever built - I use these scripts every day.
+
+While there are paid apps offering similar features, I’m sharing this script for free because I believe anyone could build something like this in Cursor in just a few hours. I originally wrote the first version years ago, back when there weren’t any good tools for translation. Since then, I’ve been improving it from time to time.
 
 [Mobius Conference Speech (Russian, YouTube)](https://www.youtube.com/watch?v=lU7EZ2K_4ho)
-
-## News 🚀
-* **2025.06.22** - Improved support for plural strings; added ability to process multiple files
-
 
 ### Localization Scripts
 <img src="images/modes.jpg">
@@ -17,6 +15,9 @@ This script is designed to help in localizing an iOS application using OpenAI's 
 
 ![Terminal animation](/images/anim.gif)
 
+## News 🚀
+* **2025.06.22** - Improved support for **plural strings**; added ability to process **multiple files** with batching in 1 request
+
 ### Prerequisites
 
 To run this script, you will need:
@@ -24,11 +25,15 @@ To run this script, you will need:
 - `openai` Python package
 - An OpenAI API key
 
-Before you can run the script, make sure to install the necessary Python packages:
-
 ```bash
-pip3 install openai tiktoken argparse tqdm
+pip3 install openai tiktoken argparse tqdm glob2
 ```
+
+### ✅ Features
+- [x] Localize release notes and App Store metadata
+- [x] Support for plural string localization (handled in a separate request with a dedicated prompt)  
+- [x] Localize multiple files in a single request
+- [ ] Support for complex substitutions (e.g. strings with multiple plurals) 
 
 ### Usage
 
@@ -36,30 +41,19 @@ To use the script, run it from the command line with the required arguments.
 
 ```bash
 python3 localize_strings.py \
---gpt_api_key YOUR_GPT_API_KEY \
---files PATH_TO_XCSTRINGS_FILE \
---localize_from SOURCE_LANG_CODES \
---localize_to TARGET_LANG_CODES
+  --gpt_api_key YOUR_GPT_API_KEY \
+  --files ./project_path/Localizable.xcstrings \
+  --localize_from "en" \
+  --localize_to "ar,de,es,fi,fr,..."
 ```
 
-Or just pass project folder and it will localize all `*.xcstrings` files inside project
+Or just pass the project folder, and it will localize all `*.xcstrings` files inside the project. You can also use multiple source languages to provide more context for GPT translations.
 ```bash
 python3 localize_strings.py \
---gpt_api_key YOUR_GPT_API_KEY \
---files_pattern ./project_path/*.xcstrings \
---localize_from SOURCE_LANG_CODES \
---localize_to TARGET_LANG_CODES
-```
-
-For `localize_release_notes` you need to [install Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/). You also need to provide `fastlane_api_key_path` with path to JSON file:
-```json
-{
-  "key_id": "CQC6F7C12K",
-  "issuer_id": "39a1de7c-d01c-41se-e052-532c7c1ja4p1",
-  "key": "-----BEGIN PRIVATE KEY-----\nMAGTAgEASBcGRyqG...\n-----END PRIVATE KEY-----",
-  "duration": 1200,
-  "in_house": false 
-}
+  --gpt_api_key sk-fR... \
+  --files_pattern ./project_path/*.xcstrings \
+  --localize_from "en,ru" \
+  --localize_to "ar,de,es,fi,fr,hi,it,ja,ko,pl,pt,pt-BR,.."
 ```
 
 #### Available Arguments
@@ -83,6 +77,17 @@ The script will generate a new `.xcstrings` file with the translations added. If
 - Ensure that your GPT API key has sufficient quota for processing the translations.
 - The script preserves placeholders such as `%@` and `%d` and attempts to maintain the text length and formatting.
 - Translations that need review are marked as such in the resulting file.
+  
+For `localize_release_notes` you need to [install Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/). You also need to provide `fastlane_api_key_path` with path to JSON file:
+```json
+{
+  "key_id": "CQC6F7C12K",
+  "issuer_id": "39a1de7c-d01c-41se-e052-532c7c1ja4p1",
+  "key": "-----BEGIN PRIVATE KEY-----\nMAGTAgEASBcGRyqG...\n-----END PRIVATE KEY-----",
+  "duration": 1200,
+  "in_house": false 
+}
+```
 
 ### Contributing
 
