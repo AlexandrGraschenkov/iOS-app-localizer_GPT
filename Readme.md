@@ -11,7 +11,7 @@ While there are paid apps offering similar features, I’m sharing this script f
 ### Localization Scripts
 <img src="images/modes.jpg">
 
-**Please note:** only supports `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere. Did't test quality with `gpt-4.1`, `gpt-4.1-mini`.
+**Please note:** only supports `gpt-4.1`, `gpt-4.1-mini`, `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere. Did't test quality with `gpt-4.1`, `gpt-4.1-mini`.
 
 ![Terminal animation](/images/anim.gif)
 
@@ -59,7 +59,7 @@ python3 localize_strings.py \
 #### Available Arguments
 
 - `--gpt_api_key`: Your GPT API key (required).
-- `--gpt_model`: The GPT model you want to use (optional, default is `gpt-3.5-turbo-1106`).
+- `--gpt_model`: The GPT model you want to use (optional, default is `gpt-4-1106-preview`).
 - `--files`: The path to the `.xcstrings` files you want to localize (required).
 - `--out_files`: The path to the output `.xcstrings` files (optional, will overwrite the original file if not provided).
 - `--localize_from`: A comma-separated list of source language codes (required).
