@@ -153,23 +153,18 @@ def ungroup_outputs(data: dict, key_mappings: list):
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Python script localize your application powered with GPT.')
     
-    parser.add_argument('--gpt_api_key',
+    parser.add_argument('--gpt_api_key', '-k',
                         type=str,
                         required=True,
                         help='Your GPT API key')
     
     list_models = ", ".join(list(gpt_models.keys()))
-    parser.add_argument('--gpt_model',
+    parser.add_argument('--gpt_model', '-m',
                         type=str,
                         default="gpt-4-1106-preview",
                         help=f'Choose model from: {list_models}')
     
-    parser.add_argument('--file',
-                        type=str,
-                        dest='files',
-                        help='Location of `xcstrings` file(s)')
-    
-    parser.add_argument('--files',
+    parser.add_argument('--files', '--file', '-f',
                         type=str,
                         nargs="+",
                         help='Location of `xcstrings` file(s)')
@@ -178,28 +173,23 @@ def parse_arguments():
                         type=str,
                         help='Pattern to match files (e.g., "./project_path/*.xcstrings")')
     
-    parser.add_argument('--out_file',
-                        type=str,
-                        dest='out_files',
-                        help='Customize output location of `xcstrings` output files')
-    
-    parser.add_argument('--out_files',
+    parser.add_argument('--out_files','--out_file', '-of',
                         type=str,
                         default=None,
                         nargs="+",
                         help='Customize output location of `xcstrings` output files')
     
-    parser.add_argument('--localize_to',
+    parser.add_argument('--localize_to', '-to',
+                        type=str,
+                        required=True,
+                        help='Array of language codes like "ru,en,de"')
+
+    parser.add_argument('--localize_from', '-from',
                         type=str,
                         required=True,
                         help='Array of language codes like "ru,en,de"')
     
-    parser.add_argument('--localize_from',
-                        type=str,
-                        required=True,
-                        help='Array of language codes like "ru,en,de"')
-    
-    parser.add_argument('--app_description',
+    parser.add_argument('--app_description', '-desc',
                         type=str,
                         default=None,
                         help='Short description about your App. For better context understanding.')
