@@ -1,84 +1,115 @@
-## Python Localization Script with GPT Support
+# 🌍 iOS App localization 
+***.xcstrings** / **metadata** / **release_notes**
 
-<img src="images/github_localize_header.jpg">
+<img src="images/github_localize_header.jpg" alt="Localization Banner">
 
-This script is designed to help in localizing an iOS application using OpenAI's GPT models. It reads a `.xcstrings` file containing localization strings and generates translations for specified target languages while preserving the format, placeholders, and comments. You can also localize your release notes into all App Store languages with a single command. Honestly, this is probably **the most useful tool** I’ve ever built - I use these scripts every day.
+This script helps localize iOS `.xcstrings` files and App Store metadata using OpenAI's GPT models. It preserves formatting, placeholders, and developer comments — all while generating high-quality translations in multiple languages with a single command.
 
-While there are paid apps offering similar features, I’m sharing this script for free because I believe anyone could build something like this in Cursor in just a few hours. I originally wrote the first version years ago, back when there weren’t any good tools for translation. Since then, I’ve been improving it from time to time.
+**This is probably the most useful tool I’ve ever built — I use it every day.**
 
-[Mobius Conference Speech (Russian, YouTube)](https://www.youtube.com/watch?v=lU7EZ2K_4ho)
+While similar features exist in paid tools, I’m sharing this for free because anyone could build basic version in Cursor in just a few hours. The first version dates back to a time when no proper tools were available. Since then, I've gradually improved it.
 
-### Localization Scripts
-<img src="images/modes.jpg">
+🎥 [Mobius Conference Talk (Russian)](https://www.youtube.com/watch?v=lU7EZ2K_4ho)
 
-**Please note:** only supports `gpt-4.1`, `gpt-4.1-mini`, `gpt-4-1106-preview`, `gpt-4o-2024-05-13`, `gpt-4o-mini-2024-07-18` and `gpt-3.5-turbo-1106` models, which can give back an answer as JSON. I've found that `gpt-4-1106-preview` gives the best translation quality, so I use it by default everywhere. Did't test quality with `gpt-4.1`, `gpt-4.1-mini`.
+---
+
+## 📜 Supported GPT Models
+
+<img src="images/modes.jpg" alt="Model Support">
+
+This tool supports the following models:
+
+- `gpt-4-1106-preview` ✅ (default and recommended)
+- `gpt-4o-2024-05-13`
+- `gpt-4o-mini-2024-07-18`
+- `gpt-4.1`, `gpt-4.1-mini`
+- `gpt-3.5-turbo-1106`
+
+> 🧠 `gpt-4-1106-preview` provides the best translation quality based on my experience.  
+> ⚠️ `gpt-4.1` and `gpt-4.1-mini` may work better and be cheaper, but I haven’t tested them yet for quality comparison.
 
 ![Terminal animation](/images/anim.gif)
 
-## News 🚀
-* **2025.06.22** - Improved support for **plural strings**; added ability to process **multiple files** with batching in 1 request
 
-### Prerequisites
+## 🚀 News & Updates
 
-To run this script, you will need:
+**2025-06-22**
+- Added support for **plural strings**
+- Now supports **batching multiple files** in a single request
+
+
+## 📦 Prerequisites
+
+Make sure you have:
+
 - Python 3.x
-- `openai` Python package
 - An OpenAI API key
+- Required Python packages:
 
 ```bash
 pip3 install openai tiktoken argparse tqdm glob2
 ```
 
-### ✅ Features
-- [x] Localize release notes and App Store metadata
-- [x] Support for plural string localization (handled in a separate request with a dedicated prompt)  
-- [x] Localize multiple files in a single request
-- [ ] Support for complex substitutions (e.g. strings with multiple plurals) 
 
-### Usage
+## ✅ Features
 
-To use the script, run it from the command line with the required arguments.
+- [x] Localize App Store metadata and release notes
+- [x] Plural string support (handled separately with a special prompt)
+- [x] Process multiple `.xcstrings` files at once
+- [ ] (Coming soon) Support for complex substitutions (e.g. multiple plurals in one string)
+
+
+## 🛠 Usage
+
+### Basic Example
 
 ```bash
 python3 localize_strings.py \
-  --gpt_api_key YOUR_GPT_API_KEY \
+  --gpt_api_key sk-... \
   --files ./project_path/Localizable.xcstrings \
   --localize_from "en" \
   --localize_to "ar,de,es,fi,fr,..."
 ```
 
-Or just pass the project folder, and it will localize all `*.xcstrings` files inside the project. You can also use multiple source languages to provide more context for GPT translations.
+### Advanced Example (with multiple source languages & wildcards)
+
 ```bash
 python3 localize_strings.py \
-  --gpt_api_key sk-fR... \
+  --gpt_api_key sk-... \
   --files_pattern ./project_path/*.xcstrings \
   --localize_from "en,ru" \
-  --localize_to "ar,de,es,fi,fr,hi,it,ja,ko,pl,pt,pt-BR,.."
+  --localize_to "ar,de,es,fi,fr,hi,it,ja,ko,pl,pt,pt-BR,..."
 ```
 
-#### Available Arguments
 
-- `--gpt_api_key`: Your GPT API key (required).
-- `--gpt_model`: The GPT model you want to use (optional, default is `gpt-4-1106-preview`).
-- `--files`: The path to the `.xcstrings` files you want to localize (required).
-- `--out_files`: The path to the output `.xcstrings` files (optional, will overwrite the original file if not provided).
-- `--localize_from`: A comma-separated list of source language codes (required).
-- `--localize_to`: A comma-separated list of target language codes (required).
-- `--app_description`: A short description of your application for better context understanding (optional).
-- `--max_input_token_count`: Maximum number of tokens for the model (optional).
+## ⚙️ Available Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `--gpt_api_key` | Your OpenAI API key (required) |
+| `--gpt_model` | GPT model to use (optional, default: `gpt-4-1106-preview`) |
+| `--files` | Path to `.xcstrings` file(s) (required if `--files_pattern` not used) |
+| `--files_pattern` | Pattern to match multiple files (e.g. `*.xcstrings`) |
+| `--out_files` | Output path (optional, will overwrite originals if not provided) |
+| `--localize_from` | Source language codes (comma-separated, e.g. `en,ru`) |
+| `--localize_to` | Target language codes (comma-separated) |
+| `--app_description` | App description to help GPT understand context (optional) |
+| `--max_input_token_count` | Max token count for each request (optional) |
 
 
-### Output
+## 📄 Output
 
-The script will generate a new `.xcstrings` file with the translations added. If the `--out_files` argument is not provided, the original file will be overwritten.
+- Generates `.xcstrings` files with translated strings
+- If `--out_files` is not set, it will overwrite the original files
+- Strings needing review will be marked accordingly
+- Placeholders like `%@`, `%d`, etc. are preserved
+- Ignore keys marked as `do not translate`
 
-### Notes
 
-- Ensure that your GPT API key has sufficient quota for processing the translations.
-- The script preserves placeholders such as `%@` and `%d` and attempts to maintain the text length and formatting.
-- Translations that need review are marked as such in the resulting file.
-  
-For `localize_release_notes` you need to [install Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/). You also need to provide `fastlane_api_key_path` with path to JSON file:
+## 📝 App Store Release Notes
+
+To use `localize_release_notes`, install [Fastlane](https://docs.fastlane.tools/getting-started/ios/setup/) and provide a valid API key JSON file:
+
 ```json
 {
   "key_id": "CQC6F7C12K",
@@ -89,18 +120,22 @@ For `localize_release_notes` you need to [install Fastlane](https://docs.fastlan
 }
 ```
 
-### Contributing
+## 📝 App Store Metadata
 
-Feel free to fork the project and submit pull requests with improvements or report any issues you encounter.
-
-### License
-
-This script is open-sourced under the MIT License. See the LICENSE file for more information.
-
-### Contact
-
-For any additional questions or comments, please open an issue in the repository.
+This script allows you to localize your app’s metadata: name, subtitle, description, keywords, and promotional text. While the localization of the name, subtitle, and keywords won't replace professional ASO, it's definitely better than having no localization at all.
 
 ---
 
-Happy Localizing! 🌍📲
+## 📄 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## 📬 Contact / 🤝 Contributing
+
+Have questions, suggestions, or feedback? Feel free to open an issue on GitHub, fork the repo, or submit a pull request — contributions are always welcome!
+
+📧 Email: alexandr.graschenkov91@gmail.com
+
+
+
+### ✨ Happy Localizing! ✨
