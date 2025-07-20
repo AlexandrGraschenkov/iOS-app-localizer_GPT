@@ -210,7 +210,7 @@ def parse_arguments():
     
     # Expand file pattern if provided
     if args.files_pattern:
-        expanded_files = glob.glob(args.files_pattern)
+        expanded_files = glob.glob(args.files_pattern, recursive=True)
         if not expanded_files:
             parser.error(f"No files found matching pattern: {args.files_pattern}")
         args.files = expanded_files
