@@ -113,6 +113,30 @@ def find_unique_key(base_key, used_keys):
     
     return f"{base_key}_{counter}"
 
+def extract_languages_from_files(file_paths: list):
+    """Extract all available languages from xcstrings files"""
+    all_languages = set()
+    source_language = None
+    
+    for file_path in file_paths:
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            # Get source language
+            if 'sourceLanguage' in data and source_language is None:
+                source_language = data['sourceLanguage']
+            
+            # Extract languages from all string entries
+            if 'strings' in data:
+                for key, value in data['strings'].items():
+                    if 'localizations' in value:
+                        all_languages.update(value['localizations'].keys())
+        except Exception as e:
+            print(f"Warning: Could not extract languages from {file_path}: {e}")
+    
+    return list(all_languages), source_language
+
 def group_multiple_inputs(inputs: list, src_langs: list, dst_langs: list):
     normal_dict = dict()
     plural_dict = dict()
@@ -181,13 +205,13 @@ def parse_arguments():
     
     parser.add_argument('--localize_to', '-to',
                         type=str,
-                        required=True,
-                        help='Array of language codes like "ru,en,de"')
+                        default=None,
+                        help='Array of language codes like "ru,en,de". If not provided, will use all languages from the files except source language.')
 
     parser.add_argument('--localize_from', '-from',
                         type=str,
-                        required=True,
-                        help='Array of language codes like "ru,en,de"')
+                        default=None,
+                        help='Array of language codes like "ru,en,de". If not provided, will use the source language from the files.')
     
     parser.add_argument('--app_description', '-desc',
                         type=str,
@@ -235,14 +259,42 @@ def main():
                      max_input_token_count=args.max_input_token_count)
     if not gpt: exit
     
-    src_langs = args.localize_from.split(",")
-    dst_langs = args.localize_to.split(",")
+    # Prepare file paths
     original_list = []
     src_paths = []
     for file_name in args.files:
         full_path = os.path.join(os.getcwd(), file_name)
         src_paths.append(full_path)
         original_list += [json.load(open(full_path))]
+    
+    # Auto-detect languages if not provided
+    if args.localize_from is None or args.localize_to is None:
+        print("Auto-detecting languages from files...")
+        all_languages, source_language = extract_languages_from_files(src_paths)
+        
+        if args.localize_from is None:
+            if source_language:
+                src_langs = [source_language]
+                print(f"Using source language: {source_language}")
+            else:
+                print("Warning: Could not detect source language, using 'en' as default")
+                src_langs = ["en"]
+        else:
+            src_langs = args.localize_from.split(",")
+        
+        if args.localize_to is None:
+            # Use all languages except source languages
+            dst_langs = [lang for lang in all_languages if lang not in src_langs]
+            if dst_langs:
+                print(f"Auto-detected target languages: {', '.join(sorted(dst_langs))}")
+            else:
+                print("Warning: No target languages found in files")
+                exit(1)
+        else:
+            dst_langs = args.localize_to.split(",")
+    else:
+        src_langs = args.localize_from.split(",")
+        dst_langs = args.localize_to.split(",")
 
     out_file_path = args.out_files
     if not out_file_path:

@@ -33,6 +33,10 @@ This tool supports the following models:
 
 ## 🚀 News & Updates
 
+**2025-09-27**
+- Added **automatic language detection** from `.xcstrings` files
+- `--localize_from` and `--localize_to` are now optional
+
 **2025-06-22**
 - Added support for **plural strings**
 - Now supports **batching multiple files** in a single request
@@ -64,6 +68,12 @@ pip3 install openai tiktoken argparse tqdm glob2
 ### Basic Example
 
 ```bash
+# Auto-detect languages
+python3 localize_strings.py \
+  --gpt_api_key sk-... \
+  --files ./project_path/Localizable.xcstrings
+
+# Or specify languages manually
 python3 localize_strings.py \
   --gpt_api_key sk-... \
   --files ./project_path/Localizable.xcstrings \
@@ -91,8 +101,8 @@ python3 localize_strings.py \
 | `--files` | Path to `.xcstrings` file(s) (required if `--files_pattern` not used) |
 | `--files_pattern` | Pattern to match multiple files (e.g. `*.xcstrings`) |
 | `--out_files` | Output path (optional, will overwrite originals if not provided) |
-| `--localize_from` | Source language codes (comma-separated, e.g. `en,ru`) |
-| `--localize_to` | Target language codes (comma-separated) |
+| `--localize_from` | Source language codes (comma-separated, e.g. `en,ru`) - auto-detected if not provided |
+| `--localize_to` | Target language codes (comma-separated) - auto-detected if not provided |
 | `--app_description` | App description to help GPT understand context (optional) |
 | `--max_input_token_count` | Max token count for each request (optional) |
 
