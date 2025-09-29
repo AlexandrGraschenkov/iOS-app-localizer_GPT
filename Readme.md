@@ -19,14 +19,15 @@ While similar features exist in paid tools, I’m sharing this for free because 
 
 This tool supports the following models:
 
-- `gpt-4-1106-preview` ✅ (default and recommended)
+- `gpt-4.1` ✅ (default and recommended)
+- `gpt-4-1106-preview`
 - `gpt-4o-2024-05-13`
 - `gpt-4o-mini-2024-07-18`
-- `gpt-4.1`, `gpt-4.1-mini`
+- `gpt-4.1-mini`
 - `gpt-3.5-turbo-1106`
 
-> 🧠 `gpt-4-1106-preview` provides the best translation quality based on my experience.  
-> ⚠️ `gpt-4.1` and `gpt-4.1-mini` may work better and be cheaper, but I haven’t tested them yet for quality comparison.
+> 🧠 `gpt-4.1` provides the best translation quality based on my experience. `gpt-4.1-1106-preview` was even better, but more expensive.
+> ⚠️ `gpt-5` and `gpt-5-mini` not tested.
 
 ![Terminal animation](/images/anim.gif)
 
@@ -97,7 +98,7 @@ python3 localize_strings.py \
 | Argument | Description |
 |----------|-------------|
 | `--gpt_api_key` | Your OpenAI API key (required) |
-| `--gpt_model` | GPT model to use (optional, default: `gpt-4-1106-preview`) |
+| `--gpt_model` | GPT model to use (optional, default: `gpt-4.1`) |
 | `--files` | Path to `.xcstrings` file(s) (required if `--files_pattern` not used) |
 | `--files_pattern` | Pattern to match multiple files (e.g. `*.xcstrings`) |
 | `--out_files` | Output path (optional, will overwrite originals if not provided) |
