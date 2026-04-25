@@ -3,6 +3,43 @@ from utils.gpt_utils import gpt_models, GPTWrapper
 from tqdm.auto import tqdm
 from utils.languages import LANGUAGES
 
+EXCLUDED_PATTERN_DIRS = {
+    ".git",
+    ".hg",
+    ".svn",
+    ".build",
+    ".swiftpm",
+    "DerivedData",
+    "Pods",
+    "__pycache__",
+}
+
+def should_skip_pattern_dir(dirname):
+    return dirname.startswith(".") or dirname in EXCLUDED_PATTERN_DIRS
+
+def expand_files_pattern(pattern):
+    if "**" not in pattern:
+        return sorted(glob.glob(pattern))
+
+    recursive_marker = f"{os.sep}**"
+    marker_index = pattern.find(recursive_marker)
+    if marker_index == -1:
+        return sorted(glob.glob(pattern, recursive=True))
+
+    root = pattern[:marker_index].rstrip(os.sep) or os.sep
+    remainder = pattern[marker_index + len(recursive_marker):].lstrip(os.sep)
+    matches = set()
+
+    for dirpath, dirnames, _ in os.walk(root, followlinks=False):
+        dirnames[:] = [dirname for dirname in dirnames if not should_skip_pattern_dir(dirname)]
+
+        search_pattern = os.path.join(dirpath, remainder) if remainder else dirpath
+        for matched_file in glob.glob(search_pattern):
+            if os.path.isfile(matched_file):
+                matches.add(matched_file)
+
+    return sorted(matches)
+
 # for easy access to nested elements
 class Hasher(dict):
     # https://stackoverflow.com/a/3405143/190597
@@ -234,7 +271,7 @@ def parse_arguments():
     
     # Expand file pattern if provided
     if args.files_pattern:
-        expanded_files = glob.glob(args.files_pattern, recursive=True)
+        expanded_files = expand_files_pattern(args.files_pattern)
         if not expanded_files:
             parser.error(f"No files found matching pattern: {args.files_pattern}")
         args.files = expanded_files
