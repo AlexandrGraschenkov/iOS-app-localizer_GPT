@@ -1,7 +1,11 @@
 import json
+import openai
 from openai import OpenAI
 import tiktoken
 from tqdm.auto import tqdm
+
+OPENAI_MAX_RETRIES = 5
+OPENAI_TIMEOUT_SECONDS = 120.0
 
 # only this models supprot json response
 gpt_models = {
@@ -24,7 +28,11 @@ class GPTWrapper:
             print(f"Can't find {model} in list available models")
             return None
         
-        self.client = OpenAI(api_key=api_key)
+        self.client = OpenAI(
+            api_key=api_key,
+            max_retries=OPENAI_MAX_RETRIES,
+            timeout=OPENAI_TIMEOUT_SECONDS,
+        )
         self.model = model
         self.temperature = temperature
         self.enc = tiktoken.encoding_for_model("gpt-4")
@@ -71,16 +79,29 @@ class GPTWrapper:
 
     def __process_json_internal(self, prompt, json_input):
         message = json.dumps(json_input, ensure_ascii=False, separators=(',', ':'))
-        response = self.client.chat.completions.create(
-            model = self.model,
-            temperature = self.temperature,
-            response_format = { "type": "json_object" },
-            messages = [
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": message}
-            ]
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                temperature=self.temperature,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": message},
+                ],
+            )
+        except openai.APIStatusError as error:
+            request_id = error.request_id or "unknown"
+            raise RuntimeError(
+                f"OpenAI API request failed with status {error.status_code} "
+                f"after {OPENAI_MAX_RETRIES} retries (request ID: {request_id})"
+            ) from error
+
         output_text = response.choices[0].message.content
+        if not output_text:
+            raise RuntimeError(
+                f"OpenAI returned an empty response (request ID: {response._request_id})"
+            )
+
         # print("Output Tokens:", len(enc.encode(output_text)))
         self.total_out_tokens += len(self.enc.encode(output_text))
         return json.loads(output_text)

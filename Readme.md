@@ -52,7 +52,7 @@ Make sure you have:
 - Required Python packages:
 
 ```bash
-pip3 install openai tiktoken argparse tqdm glob2
+python3 -m pip install -r requirements.txt
 ```
 
 
